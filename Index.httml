@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jurnal Trading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1ec;--ink:#14211b;--mut:#64706a;--card:#fbfcfa;--line:#d8ded6;--win:#0e7c59;--loss:#c2412d;--acc:#2447d6;--ease:cubic-bezier(.2,.7,.2,1)}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1512;--ink:#e8eee9;--mut:#8b9890;--card:#171f1b;--line:#27312c;--win:#3fcf9b;--loss:#ff7a62;--acc:#8ea5ff}}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 'Bricolage Grotesque',system-ui,sans-serif;font-variant-numeric:tabular-nums;padding:max(16px,env(safe-area-inset-top)) 20px 60px}
+.wrap{max-width:860px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;padding:24px 0 8px}
+h1{font-size:clamp(28px,5vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.sub{color:var(--mut);font-size:14px}
+.btns{display:flex;gap:8px}
+button,input,select{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:999px;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s,background .25s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px #0001}
+.btn:active{transform:scale(.96)}
+.btn.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.hero{padding:28px 0 4px}
+.hero .v{font-size:clamp(48px,13vw,96px);font-weight:800;letter-spacing:-.04em;line-height:1;transition:color .5s}
+.v.w{color:var(--win)}.v.l{color:var(--loss)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0 16px}
+.stats div{background:var(--card);padding:14px 16px}
+.stats b{display:block;font-size:22px;font-weight:600}
+.stats span{color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;position:relative}
+#svg svg{display:block;width:100%;height:auto;touch-action:pan-y}
+#tip{position:absolute;top:6px;left:0;pointer-events:none;background:var(--ink);color:var(--bg);padding:4px 10px;border-radius:8px;font-size:13px;white-space:nowrap;opacity:0;transform:translateX(-50%);transition:opacity .2s,left .12s}
+.panel{display:grid;grid-template-rows:0fr;margin:0;transition:grid-template-rows .5s var(--ease),margin .5s var(--ease)}
+.panel.open{grid-template-rows:1fr;margin:16px 0}
+.panel .in{overflow:hidden;min-height:0;padding:1px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+label{display:grid;gap:4px;font-size:13px;color:var(--mut)}
+.wide{grid-column:1/-1}
+input,select{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 12px;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 25%,transparent)}
+.act{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:14px}
+.err{color:var(--loss);font-size:14px;margin-right:auto}
+.shake{animation:shake .4s}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:24px 0 12px}
+.seg{position:relative;display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{position:relative;z-index:1;border:0;background:none;padding:6px 14px;cursor:pointer;border-radius:999px;transition:color .3s}
+.seg button.on{color:var(--bg)}
+.seg i{position:absolute;top:3px;bottom:3px;left:3px;width:0;background:var(--ink);border-radius:999px;transition:left .45s var(--ease),width .45s var(--ease)}
+#q{flex:1;min-width:150px;width:auto;border-radius:999px;padding:8px 16px}
+ul{list-style:none;padding:0;display:grid;gap:8px}
+.row{display:grid;grid-template-columns:96px 1fr 1.2fr auto 32px;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .3s var(--ease)}
+.row:hover{transform:translateX(3px)}
+.row .d{color:var(--mut);font-size:14px}
+.tag{margin-left:8px;font-size:12px;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,var(--acc) 15%,transparent);color:var(--acc)}
+.tag.sell{background:color-mix(in srgb,var(--loss) 15%,transparent);color:var(--loss)}
+.p small{display:block;color:var(--mut);font-size:12px}
+.pl{font-weight:600;text-align:right}.pl.w{color:var(--win)}.pl.l{color:var(--loss)}
+.x{border:0;background:none;color:var(--mut);font-size:20px;line-height:1;cursor:pointer;border-radius:50%;width:32px;height:32px;transition:background .25s,color .25s,transform .35s var(--ease)}
+.x:hover{background:color-mix(in srgb,var(--loss) 15%,transparent);color:var(--loss);transform:rotate(90deg)}
+.n{grid-column:1/-1;color:var(--mut);font-size:14px;border-top:1px dashed var(--line);padding-top:8px}
+.empty{text-align:center;color:var(--mut);padding:36px 12px}
+.empty .btn{margin-left:4px}
+.stag{animation:in .55s var(--ease) backwards;animation-delay:calc(min(var(--i),12)*45ms)}
+.new{animation:pop .7s var(--ease) backwards}
+.out{opacity:0;transform:translateX(40px);height:0!important;padding-top:0;padding-bottom:0;border-width:0;margin-bottom:-8px;transition:all .35s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(14px)}}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(-10px);background:color-mix(in srgb,var(--acc) 25%,var(--card))}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(max-width:600px){
+ .stats{grid-template-columns:1fr 1fr}
+ .row{grid-template-columns:1fr auto 32px}
+ .row .d{grid-column:1/-1}
+ .row .p{grid-column:1/-1;order:5}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header>
+  <div><h1>Jurnal Trading</h1><p class="sub">Catat, ukur, dan evaluasi setiap trade.</p></div>
+  <div class="btns"><button class="btn" id="exp">Ekspor CSV</button><button class="btn pri" id="add">Catat trade</button></div>
+ </header>
+
+ <section class="hero"><div class="v" id="tot">0,00</div><p class="sub" id="cnt">Belum ada trade</p></section>
+
+ <section class="stats">
+  <div><b id="wr">–</b><span>Win rate</span></div>
+  <div><b id="pf">–</b><span>Profit factor</span></div>
+  <div><b id="dd">–</b><span>Drawdown maks</span></div>
+  <div><b id="n">0</b><span>Jumlah trade</span></div>
+ </section>
+
+ <section class="card" id="chart"><div id="tip"></div><div id="svg"></div></section>
+
+ <div class="panel" id="panel" inert><div class="in">
+  <form class="card" id="f" novalidate>
+   <div class="fg">
+    <label>Tanggal<input type="date" name="date" required></label>
+    <label>Simbol<input name="sym" placeholder="EURUSD, BBCA, BTC" required></label>
+    <label>Arah<select name="dir"><option value="buy">Buy (long)</option><option value="sell">Sell (short)</option></select></label>
+    <label>Harga masuk<input name="entry" type="number" step="any" required></label>
+    <label>Harga keluar<input name="exit" type="number" step="any" required></label>
+    <label>Ukuran (qty atau lot)<input name="qty" type="number" step="any" min="0" value="1" required></label>
+    <label>P/L manual<input name="pl" type="number" step="any" placeholder="Otomatis"></label>
+    <label class="wide">Catatan<input name="note" placeholder="Alasan entry, kondisi emosi, pelajaran"></label>
+   </div>
+   <div class="act"><span class="err" id="err" role="alert"></span><button class="btn pri" type="submit">Simpan trade</button></div>
+  </form>
+ </div></div>
+
+ <div class="bar">
+  <div class="seg" id="seg"><i></i><button data-f="all" class="on">Semua</button><button data-f="w">Profit</button><button data-f="l">Loss</button></div>
+  <input id="q" type="search" placeholder="Cari simbol atau catatan" aria-label="Cari trade">
+ </div>
+ <ul id="list"></ul>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let T=[],flt='all',q='';
+try{T=JSON.parse(localStorage.getItem('jt')||'[]')}catch(e){}
+const save=()=>{try{localStorage.setItem('jt',JSON.stringify(T))}catch(e){}};
+const nf=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+const nf1=new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
+const sg=v=>(v>0?'+':v<0?'−':'')+nf.format(Math.abs(v));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sorted=()=>[...T].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
+
+/* Angka yang berhitung naik/turun dengan mulus */
+function count(el,to,fmt){
+ const from=+el.dataset.v||0,id=el._t=(el._t||0)+1;el.dataset.v=to;
+ if(RM||from===to){el.textContent=fmt(to);return}
+ const t0=performance.now();
+ (function s(t){
+  if(el._t!==id)return;
+  const p=Math.min((t-t0)/800,1),e=1-Math.pow(1-p,3);
+  el.textContent=fmt(from+(to-from)*e);
+  if(p<1)requestAnimationFrame(s);
+ })(t0);
+}
+
+function stats(){
+ const s=sorted(),n=s.length,w=s.filter(x=>x.pl>0),l=s.filter(x=>x.pl<0);
+ const tot=s.reduce((a,x)=>a+x.pl,0),gw=w.reduce((a,x)=>a+x.pl,0),gl=-l.reduce((a,x)=>a+x.pl,0);
+ let c=0,pk=0,dd=0;
+ s.forEach(x=>{c+=x.pl;pk=Math.max(pk,c);dd=Math.max(dd,pk-c)});
+ const tv=$('#tot');tv.className='v '+(tot>=0?'w':'l');
+ count(tv,tot,sg);
+ $('#cnt').textContent=n?`dari ${n} trade: ${w.length} profit, ${l.length} loss`:'Belum ada trade';
+ count($('#wr'),n?w.length/n*100:0,v=>n?nf1.format(v)+'%':'–');
+ const pf=$('#pf');
+ if(n&&!gl){pf._t=(pf._t||0)+1;pf.dataset.v=0;pf.textContent=gw?'∞':nf.format(0)}
+ else count(pf,n?gw/gl:0,v=>n?nf.format(v):'–');
+ count($('#dd'),dd,v=>n?nf.format(v):'–');
+ count($('#n'),n,v=>Math.round(v));
+}
+
+/* Kurva ekuitas: garis tergambar perlahan */
+function chart(){
+ const s=sorted(),box=$('#svg');
+ if(!s.length){box.innerHTML='<p class="empty">Grafik ekuitas muncul setelah trade pertama dicatat.</p>';return}
+ let c=0;
+ const P=[0,...s.map(x=>c+=x.pl)],W=600,H=200,pad=14,mn=Math.min(...P);
+ let mx=Math.max(...P);if(mx===mn)mx=mn+1;
+ const X=i=>i/(P.length-1)*W,Y=v=>H-pad-(v-mn)/(mx-mn)*(H-2*pad);
+ const d=P.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(''),col=c>=0?'var(--win)':'var(--loss)';
+ box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Kurva ekuitas kumulatif"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".28"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><line x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--line)" stroke-dasharray="4 4"/><path id="ar" d="${d}L${W} ${H}L0 ${H}Z" fill="url(#g)"/><path id="ln" d="${d}" pathLength="1" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle id="dot" r="5" fill="${col}" stroke="var(--card)" stroke-width="2" cx="${X(P.length-1)}" cy="${Y(c)}"/></svg>`;
+ const sv=box.firstChild,ln=$('#ln'),ar=$('#ar'),dot=$('#dot'),tip=$('#tip');
+ if(!RM){
+  ln.style.strokeDasharray=1;ln.style.strokeDashoffset=1;ar.style.opacity=0;dot.style.opacity=0;
+  ln.getBoundingClientRect();
+  ln.style.transition='stroke-dashoffset 1.2s cubic-bezier(.65,0,.35,1)';
+  ar.style.transition='opacity 1s .5s';dot.style.transition='opacity .4s 1s';
+  ln.style.strokeDashoffset=0;ar.style.opacity=1;dot.style.opacity=1;
+ }
+ sv.onpointermove=e=>{
+  const r=sv.getBoundingClientRect(),i=Math.round(Math.min(Math.max((e.clientX-r.left)/r.width,0),1)*(P.length-1));
+  dot.setAttribute('cx',X(i));dot.setAttribute('cy',Y(P[i]));
+  tip.textContent=i?`${s[i-1].date}, ${s[i-1].sym}, kumulatif ${sg(P[i])}`:'Titik awal 0,00';
+  tip.style.left=Math.min(Math.max(16+X(i)/W*r.width,70),r.width-50)+'px';tip.style.opacity=1;
+ };
+ sv.onpointerleave=()=>{tip.style.opacity=0;dot.setAttribute('cx',X(P.length-1));dot.setAttribute('cy',Y(c))};
+}
+
+/* Daftar trade: mode 'stag' = masuk bergantian, id = baris baru, lainnya = tanpa animasi */
+function list(mode,id){
+ const f=T.filter(x=>(flt==='all'||(flt==='w'?x.pl>0:x.pl<0))&&(!q||(x.sym+' '+(x.note||'')).toLowerCase().includes(q)))
+  .sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id),ul=$('#list');
+ if(!f.length){
+  ul.innerHTML=`<li class="empty">${T.length?'Tidak ada trade yang cocok dengan filter.':'Belum ada trade. Catat yang pertama, atau <button class="btn" id="demo">isi data contoh</button>'}</li>`;
+  return;
+ }
+ ul.innerHTML=f.map((x,i)=>`<li class="row ${mode==='stag'?'stag':x.id===id?'new':''}" data-id="${x.id}" style="--i:${i}"><div class="d">${x.date}</div><div class="s"><b>${esc(x.sym)}</b><span class="tag ${x.dir}">${x.dir==='buy'?'Buy':'Sell'}</span></div><div class="p">${x.entry} ke ${x.exit}<small>ukuran ${x.qty}</small></div><div class="pl ${x.pl>=0?'w':'l'}">${sg(x.pl)}</div><button class="x" aria-label="Hapus trade ${esc(x.sym)}">×</button>${x.note?`<p class="n">${esc(x.note)}</p>`:''}</li>`).join('');
+}
+
+const refresh=(m,id)=>{stats();chart();list(m,id)};
+
+/* Panel form */
+const pn=$('#panel');
+function toggle(open){
+ open=open??!pn.classList.contains('open');
+ pn.classList.toggle('open',open);pn.inert=!open;
+ $('#add').textContent=open?'Tutup':'Catat trade';
+ if(open)setTimeout(()=>$('[name=sym]').focus(),350);
+}
+$('#add').onclick=()=>toggle();
+
+$('#f').onsubmit=e=>{
+ e.preventDefault();
+ const f=new FormData(e.target),g=k=>String(f.get(k)).trim();
+ const sym=g('sym').toUpperCase(),dir=g('dir'),entry=parseFloat(g('entry')),exit=parseFloat(g('exit')),qty=parseFloat(g('qty'));
+ const fail=m=>{$('#err').textContent=m;e.target.classList.add('shake');setTimeout(()=>e.target.classList.remove('shake'),450)};
+ if(!sym||isNaN(entry)||isNaN(exit)||!(qty>0))return fail('Isi simbol, harga masuk, harga keluar, dan ukuran (lebih dari 0).');
+ let pl=g('pl')!==''?parseFloat(g('pl')):(exit-entry)*qty*(dir==='buy'?1:-1);
+ if(isNaN(pl))return fail('P/L manual harus berupa angka.');
+ $('#err').textContent='';
+ const id=Date.now();
+ T.push({id,date:g('date')||new Date().toISOString().slice(0,10),sym,dir,entry,exit,qty,pl:Math.round(pl*100)/100,note:g('note')});
+ save();refresh('none',id);
+ e.target.reset();e.target.date.value=new Date().toISOString().slice(0,10);
+ toggle(false);
+};
+
+/* Hapus: baris meluncur keluar lalu celahnya menutup */
+$('#list').onclick=e=>{
+ if(e.target.id==='demo')return seed();
+ const b=e.target.closest('.x');if(!b)return;
+ const li=b.closest('.row'),id=+li.dataset.id;
+ li.classList.remove('stag','new');li.style.height=li.offsetHeight+'px';li.getBoundingClientRect();li.classList.add('out');
+ const done=()=>{T=T.filter(x=>x.id!==id);save();refresh('none')};
+ RM?done():setTimeout(done,360);
+};
+
+/* Filter dengan indikator yang meluncur */
+function seg(){const b=$('#seg .on'),i=$('#seg i');i.style.left=b.offsetLeft+'px';i.style.width=b.offsetWidth+'px'}
+$('#seg').onclick=e=>{
+ const b=e.target.closest('button');if(!b)return;
+ document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));
+ flt=b.dataset.f;seg();list('stag');
+};
+$('#q').oninput=e=>{q=e.target.value.trim().toLowerCase();list('none')};
+
+/* Ekspor CSV */
+$('#exp').onclick=()=>{
+ if(!T.length)return;
+ const rows=sorted().map(x=>[x.date,x.sym,x.dir,x.entry,x.exit,x.qty,x.pl,'"'+(x.note||'').replace(/"/g,'""')+'"'].join(','));
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob(['tanggal,simbol,arah,masuk,keluar,ukuran,pl,catatan\n'+rows.join('\n')],{type:'text/csv'}));
+ a.download='jurnal-trading.csv';a.click();
+};
+
+/* Data contoh */
+function seed(){
+ const sy=['EURUSD','XAUUSD','BBCA','BTCUSD','GBPJPY'],pls=[42.5,-18,65.2,-27.4,31,88.9,-45.3,12.6,-9.8,54.1,-31.7,73.4,20.2,-14.5];
+ const id=Date.now(),d=new Date();d.setDate(d.getDate()-30);
+ T=pls.map((pl,i)=>{
+  d.setDate(d.getDate()+2);
+  const dir=i%3?'buy':'sell',entry=100+i*3.5,qty=1+i%3;
+  return{id:id+i,date:d.toISOString().slice(0,10),sym:sy[i%5],dir,entry,exit:+(entry+pl/qty*(dir==='buy'?1:-1)).toFixed(2),qty,pl,note:pl>0?'Sesuai rencana.':'Entry terlalu cepat.'};
+ });
+ save();refresh('stag');
+}
+
+$('#f').date.value=new Date().toISOString().slice(0,10);
+refresh('stag');seg();
+addEventListener('load',seg);addEventListener('resize',seg);
+</script>
+</body>
+</html>
